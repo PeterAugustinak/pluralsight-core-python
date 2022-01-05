@@ -28,25 +28,96 @@ class LevelOrderIterator:
         return self
 
 
-# (a + b) * (c + d)
-# binary tree:
-expression_tree = ['*', '+', '-', 'a', 'b', 'c', 'd']
+def _left_child(index):
+    return 2 * index + 1
 
-# create iterator for our expression_tree
-iterator = LevelOrderIterator(expression_tree)
+def _right_child(index):
+    return 2 * index + 2
 
-# unpack element from iterator until StopIteration Exception
-print(next(iterator))
-print(next(iterator))
-print(next(iterator))
-print(next(iterator))
-print(next(iterator))
-print(next(iterator))
-#print(next(iterator))
 
-iterator = LevelOrderIterator(expression_tree)
-string = " ".join(iterator)
-print(string)
+class PreOrderIterator:
 
+    def __init__(self, sequence):
+        if not _is_perfect_length(sequence):
+            raise ValueError(
+                f"Sequence of length {len(sequence)} does not represent a "
+                f"perfect binary tree with length 2**n -1")
+        self._sequence = sequence
+        self._stack = [0]
+
+
+    def __next__(self):
+        if len(self._stack) == 0:
+            raise StopIteration
+        index = self._stack.pop()
+        result = self._sequence[index]
+
+        # pre-order: push right child first so left child is popped and
+        # processed first. Last-in, first-out
+        right_child_index = _right_child(index)
+        if right_child_index < len(self._sequence):
+            self._stack.append(right_child_index)
+
+        left_child_index = _left_child(index)
+        if left_child_index < len(self._sequence):
+            self._stack.append(left_child_index)
+
+        return result
+
+    def __iter__(self):
+        return self
+
+
+class InOrderIterator:
+
+    def __init__(self, sequence):
+        if not _is_perfect_length(sequence):
+            raise ValueError(
+                f"Sequence of length {len(sequence)} does not represent a "
+                f"perfect binary tree with length 2**n -1")
+        self._sequence = sequence
+        self._stack = []
+        self._index = 0
+
+    def __next__(self):
+        if (len(self._stack) == 0) and (self._index >= len(self._sequence)):
+            raise StopIteration
+
+        # push left children onto the stack while possible
+        while self._index < len(self._sequence):
+            self._stack.append(self._index)
+            self._index = _left_child(self._index)
+
+        # pop from stack and process, before moving to the right child
+        index = self._stack.pop()
+        result = self._sequence[index]
+        self._index = _right_child(index)
+        return result
+
+    def __iter__(self):
+        return self
+
+
+
+# check perfect tree
 perfect_tree = {i: _is_perfect_length(['x']* i) for i in range(0, 32)}
 print(perfect_tree)
+
+# (a + b) * (c + d)
+# binary tree:
+expression_tree = '* + - a b c d'.split()
+
+# level order iterator -> * + - a b c d
+iterator_level_order = LevelOrderIterator(expression_tree)
+string_level_order = " ".join(iterator_level_order)
+print(string_level_order)
+
+# pre-order iterator -> * + a b - c d
+iterator_pre_order = PreOrderIterator(expression_tree)
+string_pre_order = " ".join(iterator_pre_order)
+print(string_pre_order)
+
+# in-order iterator -> a + b * c - d
+iterator_in_order = InOrderIterator(expression_tree)
+string_in_order = " ".join(iterator_in_order)
+print(string_in_order)
