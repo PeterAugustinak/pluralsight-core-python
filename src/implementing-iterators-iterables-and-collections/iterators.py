@@ -97,6 +97,36 @@ class InOrderIterator:
     def __iter__(self):
         return self
 
+missing = object()
+
+
+class SkipMissingIterator:
+
+    def __init__(self, iterable):
+        self._iterator = iter(iterable)
+
+    def __next__(self):
+        while True:
+            item = next(self._iterator)
+            if item is not missing:
+                return item
+
+    def __iter__(self):
+        return self
+
+
+class TranslationIterator:
+
+    def __init__(self, table, iterable):
+        self._table = table
+        self._iterator = iter(iterable)
+
+    def __next__(self):
+        item = next(self._iterator)
+        return self._table.get(item, item)
+
+    def __iter__(self):
+        return self
 
 
 # check perfect tree
@@ -121,3 +151,35 @@ print(string_pre_order)
 iterator_in_order = InOrderIterator(expression_tree)
 string_in_order = " ".join(iterator_in_order)
 print(string_in_order)
+
+# check handling missing iterators in imperfect binary tree -> r + p * q
+expr_tree = ["+", "r", "*", missing, missing, "p", "q"]
+iterator_skipping = SkipMissingIterator(expr_tree)
+
+print(list(iterator_skipping))
+
+iterator_skipping = SkipMissingIterator(InOrderIterator(expr_tree))
+string_skipping = " ".join(iterator_skipping)
+print(string_skipping)
+
+# iterable changing iterator to symbols from table -> p * q - r / s + t
+typesetting_table = {
+    "-": "\u2212", # minus sign
+    "*": "\u00D7", # multiplication sign
+    "/": "\u00F7", # division sign
+}
+
+m = missing
+expr_tree = [
+                "-",
+            "*",         "/",
+        "p",    "q",    "r",    "+",
+    m, m,       m, m,    m, m,    "s", "t"
+]
+
+iterator_translation = TranslationIterator(
+    typesetting_table,
+    SkipMissingIterator(InOrderIterator(expr_tree))
+)
+string_translation = " ".join(iterator_translation)
+print(string_translation)
