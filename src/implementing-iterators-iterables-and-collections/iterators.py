@@ -129,6 +129,20 @@ class TranslationIterator:
         return self
 
 
+
+class PerfectBinaryTree:
+
+    def __init__(self, breadth_first_items):
+        self._sequence = tuple(breadth_first_items)
+        if not _is_perfect_length(self._sequence):
+            raise ValueError(
+                f"Sequence of length {len(self._sequence)} does not represent a "
+                f"perfect binary tree with length 2**n -1")
+
+    def __iter__(self):
+        return SkipMissingIterator(PreOrderIterator(self._sequence))
+
+
 # check perfect tree
 perfect_tree = {i: _is_perfect_length(['x']* i) for i in range(0, 32)}
 print(perfect_tree)
@@ -183,3 +197,17 @@ iterator_translation = TranslationIterator(
 )
 string_translation = " ".join(iterator_translation)
 print(string_translation)
+
+
+# PerfectBinaryTree test
+tree = PerfectBinaryTree("+ * / u v w x".split())
+iterator = iter(tree)
+# print(next(iterator))
+# print(next(iterator))
+# print(next(iterator))
+# print(next(iterator))
+# print(next(iterator))
+# print(next(iterator))
+# print(next(iterator))
+for item in tree:
+    print(item, end=" ") # same as ' '.join(tree)
