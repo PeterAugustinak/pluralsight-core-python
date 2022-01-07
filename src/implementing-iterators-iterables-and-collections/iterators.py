@@ -129,7 +129,6 @@ class TranslationIterator:
         return self
 
 
-
 class PerfectBinaryTree:
 
     def __init__(self, breadth_first_items):
