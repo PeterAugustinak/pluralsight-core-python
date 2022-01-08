@@ -14,3 +14,22 @@ class SortedFrozenSet:
       # or:
       # for item in self._items:
       #      yield item
+
+   def __getitem__(self, index):
+      result = self._items[index]
+      return SortedFrozenSet(result) if isinstance(index, slice) else result
+
+   def __repr__(self):
+      return "{type}({arg})".format(
+         type=type(self).__name__,
+         arg=(
+            repr(self._items)
+            if self._items else ""
+         )
+      )
+
+   def __eq__(self, rhs):
+      # rhs - right side operator
+      if not isinstance(rhs, type(self)):
+         return NotImplemented
+      return self._items == rhs._items
