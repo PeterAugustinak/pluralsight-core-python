@@ -259,13 +259,14 @@ class TestInequalityProtocol(unittest.TestCase):
         self.assertFalse(s != s)
 
 
-class TestHashableProtocol(unittest.TestCase):
-
-    def test_equal_sets_have_the_same_hash_code(self):
-        self.assertEqual(
-            hash(SortedFrozenSet([5, 2, 1, 4])),
-            hash(SortedFrozenSet([5, 2, 1, 4])),
-        )
+# for performance test from REPL
+# from itertools import islice
+# from recaman import recaman
+# from timeit import timeit
+# s = SortedFrozenSet(r for r in islice(recaman(), 1000) if r < 1000)
+# timeit(setup='from __main__ import s',
+#        stmt='[s.count(i) for i in range(1000)]',
+#        number=200)
 
 if __name__ == "__main__":
     unittest.main()
