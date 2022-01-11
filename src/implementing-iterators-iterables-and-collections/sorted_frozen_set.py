@@ -1,9 +1,9 @@
-from collections.abc import Sequence
+from collections.abc import Sequence, Set
 from itertools import chain
 from bisect import bisect_left
 
 
-class SortedFrozenSet(Sequence):
+class SortedFrozenSet(Sequence, Set):
 
    def __init__(self, items=None):
       self._items = tuple(sorted(set(items)) if (items is not None) else set())
@@ -68,3 +68,21 @@ class SortedFrozenSet(Sequence):
       if (index != len(self._items)) and self._items[index] == item:
          return index
       raise ValueError(f"{item!r} not found")
+
+   def issubset(self, iterable):
+       return self <= SortedFrozenSet(iterable)
+
+   def issuperset(self, iterable):
+       return self >= SortedFrozenSet(iterable)
+
+   def intersection(self, iterable):
+       return self & SortedFrozenSet(iterable)
+
+   def union(self, iterable):
+       return self | SortedFrozenSet(iterable)
+
+   def symmetric_difference(self, iterable):
+       return self ^ SortedFrozenSet(iterable)
+
+   def difference(self, iterable):
+       return self - SortedFrozenSet(iterable)
