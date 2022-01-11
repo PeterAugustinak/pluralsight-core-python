@@ -1,5 +1,6 @@
 import unittest
 
+from collections.abc import Container, Sized, Iterable, Sequence, Hashable
 from sorted_frozen_set import SortedFrozenSet
 
 
@@ -37,6 +38,9 @@ class TestContainerProtocol(unittest.TestCase):
     def test_negative_not_in_contained(self):
         self.assertFalse(9 not in self.s)
 
+    def test_protocol(self):
+        self.assertTrue(issubclass(SortedFrozenSet, Container))
+
 
 class TestSizedProtocols(unittest.TestCase):
 
@@ -60,6 +64,9 @@ class TestSizedProtocols(unittest.TestCase):
         s = SortedFrozenSet([5, 5, 5])
         self.assertEqual(len(s), 1)
 
+    def test_protocol(self):
+        self.assertTrue(issubclass(SortedFrozenSet, Sized))
+
 
 class TestIterableProtocol(unittest.TestCase):
 
@@ -81,6 +88,9 @@ class TestIterableProtocol(unittest.TestCase):
         for item in self.s:
             self.assertEqual(item, expected[index])
             index += 1
+
+    def test_protocol(self):
+        self.assertTrue(issubclass(SortedFrozenSet, Iterable))
 
 
 class TestSequenceProtocol(unittest.TestCase):
@@ -210,6 +220,9 @@ class TestSequenceProtocol(unittest.TestCase):
         s = SortedFrozenSet([4, 5, 6])
         self.assertEqual(100 * s, s)
 
+    def test_protocol(self):
+        self.assertTrue(issubclass(SortedFrozenSet, Sequence))
+
 
 class TestReprProtocol(unittest.TestCase):
 
@@ -258,6 +271,17 @@ class TestInequalityProtocol(unittest.TestCase):
         s = SortedFrozenSet([10, 11, 12])
         self.assertFalse(s != s)
 
+
+class TestHashableProtocol(unittest.TestCase):
+
+    def test_equal_sets_have_the_same_hash_code(self):
+        self.assertEqual(
+            hash(SortedFrozenSet([5, 2, 1, 4])),
+            hash(SortedFrozenSet([5, 2, 1, 4]))
+        )
+
+    def test_protocol(self):
+        self.assertTrue(issubclass(SortedFrozenSet, Hashable))
 
 # for performance test from REPL
 # from itertools import islice
